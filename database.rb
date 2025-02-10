@@ -1,17 +1,15 @@
 require 'pg'
-require 'dotenv/load'
+require 'dotenv'
+
+Dotenv.load(File.expand_path('./.env', __dir__))
 
 class Database
   def initialize
     @con = PG.connect(
-      dbname: ENV.fetch('DB_NAME', nil),
-      user: ENV.fetch('DB_USER', nil),
+      dbname: ENV.fetch('DB_NAME'),
+      user: ENV.fetch('DB_USER'),
       password: ENV.fetch('DB_PASSWORD')
     )
-  end
-
-  def exec(query:)
-    @con.exec(query)
   end
 
   def exec_params(query:, params: [])

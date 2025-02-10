@@ -1,30 +1,4 @@
-require_relative 'database'
-require 'date'
-
-class ListSemester
-  def initialize(db:)
-    @db = db
-  end
-
-  def call
-    semesters = fetch_semesters
-    display_semesters(semesters)
-  end
-
-  private 
-  
-  def fetch_semesters
-    @db.exec(query: 'SELECT * FROM semesters')
-  end
-
-  def display_semesters(semesters)
-    return puts 'В таблице нет данных.' if semesters.ntuples.zero?
-
-    result.each do |row|
-      puts "Название: #{row['name']}, дата начала: #{row['start_date']}, дата окончания: #{row['end_date']}."
-    end
-  end
-end
+require_relative 'list_semester'
 
 class Semester
   attr_accessor :semester_name, :start_date, :end_date
@@ -35,8 +9,8 @@ class Semester
     @end_date = end_date
   end
 
-  def self.list_semesters(db)
-    service = ListSemester.new(db: db)
+  def self.list_semesters
+    service = ListSemester.new
     service.call
   end
 end

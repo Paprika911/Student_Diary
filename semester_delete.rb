@@ -1,43 +1,46 @@
 require_relative 'database'
 
-class DeleteSemester
-  def initialize(semester_name:, db:)
-    @semester_name = semester_name
-    @db = db
-  end
-  
-  def delete
-    return false unless semester_exists?
-
-    if delete_semester
-      puts "Семестр #{@semester_name} успешно удален."
-      return true
+module Command
+  class DeleteSemester
+    def initialize
+      @db = Database.new
     end
 
-    puts "Не удалось удалить Семестр с именем #{@semester_name}."
-    false
-  end
+    def call
+      input_name
 
-  def semester_exists?
-    check_result = @db.exec_params(
-      query: 'SELECT 1 FROM semesters WHERE name = $1',
-      params: [@semester_name]
-    )
+      result = @db.exec_params(
+        query: 'DELETE FROM semesters WHERE name = $1 RETURNING name',
+        params: [@semester_name]
+      )
 
-    if check_result.ntuples.zero?
-      puts "Семестр с именем #{@semester_name} не найден."
-      return false
+      puts 'Семестр был успешно удален.' if result.ntuples.positive?
+    ensure
+      @db.close
     end
 
-    true
-  end
+    private
 
-  def delete_semester
-    result = @db.exec_params(
-      query: 'DELETE FROM semesters WHERE name = $1 RETURNING name',
-      params: [@semester_name]
-    )
+    def input_name
+      loop do
+        puts 'Введите название Семестра, который хотите удалить:'
+        @semester_name = gets.chomp
 
-    result.ntuples.positive?
+        break if valid_name?
+      end
+    end
+
+    def valid_name?
+      return puts 'Название Семестра не может быть пустым' if @semester_name.nil? || @semester_name.strip.empty?
+
+      result_again = @db.exec_params(
+        query: 'SELECT * FROM semesters WHERE name = $1',
+        params: [@semester_name]
+      )
+
+      return puts "Семестр с именем #{@semester_name} не найден." if result_again.ntuples.zero?
+
+      true
+    end
   end
 end
