@@ -10,7 +10,6 @@ class Semester
   end
 
   def self.list_semesters
-    service = ListSemester.new
-    service.call
+    ListSemester.perform
   end
 end

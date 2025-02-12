@@ -51,12 +51,9 @@ module Form
     def valid_semester_name?
       return puts 'Название Семестра не может быть пустым' if @semester_name.nil? || @semester_name.strip.empty?
 
-      result = @db.exec_params(
-        query: 'SELECT * FROM semesters WHERE name = $1',
-        params: [@semester_name]
-      )
+      result = FindSemesterByName.new(db: @db, semester_name: @semester_name).call
 
-      return puts 'Семестр с таким названием уже существует.' if result.ntuples.positive?
+      return puts 'Семестр с таким названием уже существует.' if result.nil?
 
       true
     end
@@ -64,19 +61,22 @@ module Form
     def valid_dates?
       str = 'Дата должна быть заполнена.' if @start_date.empty? && @end_date.empty?
       if !(@start_date.match?(/\A\d{4}-\d{2}-\d{2}\z/) && @end_date.match?(/\A\d{4}-\d{2}-\d{2}\z/)) ||
-        !(parse_date?(@start_date) && parse_date?(@end_date))
+         !(
+          begin
+            Date.parse(@start_date)
+            Date.parse(@end_date)
+            true
+          rescue ArgumentError
+            false
+          end
+        )
         str = 'Неверный формат записи даты Семестра (необходимый формат: YYYY-MM-DD)'
       end
+
       str = 'Дата начала Семестра не может быть позже даты окончания.' if @start_date > @end_date
       return puts str if str
 
       true
-    end
-
-    def parse_date?(date)
-      true if Date.parse(date)
-    rescue ArgumentError
-      false
     end
 
     def save_db(semester)

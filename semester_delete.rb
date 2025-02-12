@@ -9,12 +9,9 @@ module Command
     def call
       input_name
 
-      result = @db.exec_params(
-        query: 'DELETE FROM semesters WHERE name = $1 RETURNING name',
-        params: [@semester_name]
-      )
+      delete_semester
 
-      puts 'Семестр был успешно удален.' if result.ntuples.positive?
+      puts 'Семестр был успешно удален.' if @result.ntuples.positive?
     ensure
       @db.close
     end
@@ -33,14 +30,18 @@ module Command
     def valid_name?
       return puts 'Название Семестра не может быть пустым' if @semester_name.nil? || @semester_name.strip.empty?
 
-      result_again = @db.exec_params(
-        query: 'SELECT * FROM semesters WHERE name = $1',
-        params: [@semester_name]
-      )
+      @semester_id = FindSemesterByName.new(db: @db, semester_name: @semester_name).call
 
-      return puts "Семестр с именем #{@semester_name} не найден." if result_again.ntuples.zero?
+      return puts "Семестр с именем #{@semester_name} не найден." if @semester_id.nil?
 
       true
+    end
+
+    def delete_semester
+      @result = @db.exec_params(
+        query: 'DELETE FROM semesters WHERE id = $1 RETURNING name',
+        params: [@semester_id]
+      )
     end
   end
 end
