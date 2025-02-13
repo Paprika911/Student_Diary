@@ -1,9 +1,9 @@
 require_relative '../semesters'
 require_relative '../database'
-require_relative '../list_semester'
+require_relative '../queries/semester_query'
 require 'date'
 
-module Form
+module Forms
   class SemesterForm
     def initialize
       @db = Database.new
@@ -12,7 +12,6 @@ module Form
     def call
       input_name
       input_date
-
       semester = Semester.new(
         semester_name: @semester_name,
         start_date: @start_date,
@@ -31,7 +30,6 @@ module Form
       loop do
         puts 'Введите название Семестра:'
         @semester_name = gets.chomp
-
         break if valid_semester_name?
       end
     end
@@ -40,10 +38,8 @@ module Form
       loop do
         puts 'Введите дату начала Семестра:'
         @start_date = gets.chomp
-
         puts 'Введите дату окончания Семестра:'
         @end_date = gets.chomp
-
         break if valid_dates?
       end
     end
@@ -51,9 +47,8 @@ module Form
     def valid_semester_name?
       return puts 'Название Семестра не может быть пустым' if @semester_name.nil? || @semester_name.strip.empty?
 
-      result = FindSemesterByName.new(db: @db, semester_name: @semester_name).call
-
-      return puts 'Семестр с таким названием уже существует.' if result.nil?
+      result = Queries::SemesterQuery.new.find_by_name(semester_name: @semester_name)
+      return puts 'Семестр с таким названием уже существует.' unless result.nil?
 
       true
     end
@@ -72,7 +67,6 @@ module Form
         )
         str = 'Неверный формат записи даты Семестра (необходимый формат: YYYY-MM-DD)'
       end
-
       str = 'Дата начала Семестра не может быть позже даты окончания.' if @start_date > @end_date
       return puts str if str
 
