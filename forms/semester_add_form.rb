@@ -1,4 +1,4 @@
-require_relative '../semesters'
+require_relative '../semester'
 require_relative '../database'
 require_relative '../queries/semester_query'
 require 'date'
@@ -12,12 +12,7 @@ module Forms
     def call
       input_name
       input_date
-      semester = Semester.new(
-        semester_name: @semester_name,
-        start_date: @start_date,
-        end_date: @end_date
-      )
-      save_db(semester)
+      save_db
     ensure
       @db.close
     end
@@ -54,29 +49,24 @@ module Forms
     end
 
     def valid_dates?
-      str = 'Дата должна быть заполнена.' if @start_date.empty? && @end_date.empty?
-      if !(@start_date.match?(/\A\d{4}-\d{2}-\d{2}\z/) && @end_date.match?(/\A\d{4}-\d{2}-\d{2}\z/)) ||
-         !(
-          begin
-            Date.parse(@start_date)
-            Date.parse(@end_date)
-            true
-          rescue ArgumentError
-            false
-          end
-        )
-        str = 'Неверный формат записи даты Семестра (необходимый формат: YYYY-MM-DD)'
+      return puts 'Дата должна быть заполнена.' if @start_date.empty? || @end_date.empty?
+
+      begin
+        start_date_obj = Date.strptime(@start_date, '%Y-%m-%d')
+        end_date_obj = Date.strptime(@end_date, '%Y-%m-%d')
+      rescue ArgumentError
+        return puts 'Неверный формат записи даты Семестра (необходимый формат: YYYY-MM-DD)'
       end
-      str = 'Дата начала Семестра не может быть позже даты окончания.' if @start_date > @end_date
-      return puts str if str
+
+      return puts 'Дата начала Семестра не может быть позже даты окончания.' if start_date_obj > end_date_obj
 
       true
     end
 
-    def save_db(semester)
+    def save_db
       @db.exec_params(
         query: 'INSERT INTO semesters (name, start_date, end_date) VALUES ($1, $2, $3)',
-        params: [semester.semester_name, semester.start_date, semester.end_date]
+        params: [@semester_name, @start_date, @end_date]
       )
       puts 'Семестр успешно добавлен!'
     end

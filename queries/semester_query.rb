@@ -1,4 +1,5 @@
 require_relative '../database'
+require_relative '../queries/base_query'
 
 module Queries
   class SemesterQuery < BaseQuery
@@ -7,14 +8,21 @@ module Queries
         query: 'SELECT id FROM semesters WHERE name = $1',
         params: [semester_name]
       )
-      result.ntuples.positive? ? result[0]['id'] : nil
+      return nil if result.ntuples.zero?
+
+      row = result[0]
+      Semester.new(
+        id: row['id'],
+        semester_name: row['name'],
+        start_date: row['start_date'],
+        end_date: row['end_date']
+      )
     ensure
       @db.close
     end
 
     def all_semesters
-      semesters = fetch_semesters
-      display_semesters(semesters)
+      display_semesters(fetch_semesters)
     ensure
       @db.close
     end
