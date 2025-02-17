@@ -31,7 +31,7 @@ module Queries
 
     def fetch_disciplines
       @db.exec_params(query: 'SELECT * FROM disciplines')
-    end 
+    end
 
     def display_disciplines(disciplines)
       return puts 'Дисциплины отсутствуют.' if disciplines.ntuples.zero?
