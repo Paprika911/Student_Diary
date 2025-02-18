@@ -29,7 +29,10 @@ module Forms
     def valid_discipline_name?
       return puts 'Название Дисциплины не может быть пустым.' if @discipline_name.nil? || @discipline_name.strip.empty?
 
-      result = Queries::DisciplineQuery.new.find_by_name(discipline_name: @discipline_name)
+      result = Queries::DisciplineQuery.new.find_by_name(
+        discipline_name: @discipline_name,
+        semester_id: @semester_id
+      )
       return puts 'Дисциплина с таким названием уже существует.' unless result.nil?
 
       true

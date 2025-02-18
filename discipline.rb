@@ -1,7 +1,7 @@
 class Discipline
-  attr_accessor :id, :discipline_name
+  attr_accessor :id, :discipline_name, :semester_id
 
-  def initialize(discipline_name:, semester_id:, id: nil)
+  def initialize(id:, discipline_name:, semester_id:)
     @id = id
     @discipline_name = discipline_name
     @semester_id = semester_id
