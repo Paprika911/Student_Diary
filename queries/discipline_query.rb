@@ -4,10 +4,10 @@ require_relative '../queries/base_query'
 
 module Queries
   class DisciplineQuery < BaseQuery
-    def find_by_name(discipline_name:)
+    def find_by_name(discipline_name:, semester_id:)
       result = @db.exec_params(
-        query: 'SELECT id, name, semester_id FROM disciplines WHERE name = $1',
-        params: [discipline_name]
+        query: 'SELECT id, name, semester_id FROM disciplines WHERE name = $1 and semester_id = $2',
+        params: [discipline_name, semester_id]
       )
       return nil if result.ntuples.zero?
 
