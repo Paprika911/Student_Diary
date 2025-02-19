@@ -1,7 +1,7 @@
 require 'pg'
 require 'dotenv'
 
-Dotenv.load(File.expand_path('./.env', dir))
+Dotenv.load(File.expand_path('./.env', __dir__))
 
 module Databases
   class Postgresql
@@ -10,9 +10,7 @@ module Databases
         dbname: ENV.fetch('DB_NAME'),
         user: ENV.fetch('DB_USER'),
         password: ENV.fetch('DB_PASSWORD')
-      ).exec_params(query, params).tap do |result|
-        return result
-      end
+      ).exec_params(query, params).tap
     rescue PG::Error => e
       puts "Ошибка выполнения запроса: #{e.message}"
     ensure
