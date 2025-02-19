@@ -6,15 +6,17 @@ Dotenv.load(File.expand_path('./.env', dir))
 module Databases
   class Postgresql
     def self.perform_query(query:, params: [])
-      con = PG.connect(
+      PG.connect(
         dbname: ENV.fetch('DB_NAME'),
         user: ENV.fetch('DB_USER'),
         password: ENV.fetch('DB_PASSWORD')
-      )
-      result = con.exec_params(query, params)
-      result
+      ).exec_params(query, params).tap do |result|
+        return result
+      end
+    rescue PG::Error => e
+      puts "Ошибка выполнения запроса: #{e.message}"
     ensure
-      con.close
+      PG.connect.close if PG.respond_to?(:close)
     end
   end
 end
