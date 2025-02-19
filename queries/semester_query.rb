@@ -59,9 +59,7 @@ module Queries
     def display_disciplines(disciplines)
       return puts 'В Семестре отсутствуют Дисциплины' if disciplines.ntuples.zero?
 
-      disciplines.each do |row|
-        puts "Дисциплина: #{row['name']}"
-      end
+      disciplines.each { |row| puts "Дисциплина: #{row['name']}."}
     end
   end
 end

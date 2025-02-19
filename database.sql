@@ -9,5 +9,5 @@ CREATE TABLE disciplines(
   id SERIAL PRIMARY KEY, 
   name VARCHAR(100),
   semester_id INTEGER NOT NULL, 
-  CONSTRAINT fk_semester FOREIGN KEY (semester_id) REFERENCES semesters(id) ON DELETE CASCADE
+  semester_id INTEGER NOT NULL REFERENCES semesters(id) ON DELETE CASCADE
 );
