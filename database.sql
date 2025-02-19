@@ -6,8 +6,7 @@ CREATE TABLE semesters(
 );
 
 CREATE TABLE disciplines(
-  id SERIAL PRIMARY KEY, 
+  id SERIAL PRIMARY KEY,
   name VARCHAR(100),
-  semester_id INTEGER NOT NULL, 
   semester_id INTEGER NOT NULL REFERENCES semesters(id) ON DELETE CASCADE
 );
