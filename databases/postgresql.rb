@@ -10,7 +10,7 @@ module Databases
         dbname: ENV.fetch('DB_NAME'),
         user: ENV.fetch('DB_USER'),
         password: ENV.fetch('DB_PASSWORD')
-      ).exec_params(query, params).tap
+      ).exec_params(query, params)
     rescue PG::Error => e
       puts "Ошибка выполнения запроса: #{e.message}"
     ensure
