@@ -1,19 +1,16 @@
 require_relative '../discipline'
-require_relative '../database'
+require_relative '../databases/postgresql'
 require_relative '../queries/discipline_query'
 
 module Forms
   class DisciplineForm
     def initialize(semester_id:)
-      @db = Database.new
       @semester_id = semester_id
     end
 
     def call
       input_name
       save_db
-    ensure
-      @db.close
     end
 
     private
@@ -39,7 +36,7 @@ module Forms
     end
 
     def save_db
-      @db.exec_params(
+      @db.Databases::Postgresql.perform_query(
         query: 'INSERT INTO disciplines (name, semester_id) VALUES ($1, $2)',
         params: [@discipline_name, @semester_id]
       )

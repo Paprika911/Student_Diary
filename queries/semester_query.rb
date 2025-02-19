@@ -1,11 +1,10 @@
-require_relative '../database'
+require_relative '../databases/postgresql'
 require_relative '../semester'
-require_relative '../queries/base_query'
 
 module Queries
-  class SemesterQuery < BaseQuery
+  class SemesterQuery
     def find_by_name(semester_name:)
-      result = @db.exec_params(
+      result = Databases::Postgresql.perform_query(
         query: 'SELECT id FROM semesters WHERE name = $1',
         params: [semester_name]
       )
@@ -22,8 +21,6 @@ module Queries
 
     def all_semesters
       display_semesters(fetch_semesters)
-    ensure
-      @db.close
     end
 
     def all_semester_disciplines(semester_name:)
@@ -31,18 +28,16 @@ module Queries
       return 'Семестр с таким названием не найден.' if semester.nil?
 
       display_disciplines(fetch_disciplines(semester_id: semester.id))
-    ensure
-      @db.close
     end
 
     private
 
     def fetch_semesters
-      @db.exec_params(query: 'SELECT * FROM semesters')
+      Databases::Postgresql.perform_query(query: 'SELECT * FROM semesters')
     end
 
     def fetch_disciplines(semester_id:)
-      @db.exec_params(
+      Databases::Postgresql.perform_query(
         query: 'SELECT name FROM disciplines WHERE semester_id = $1',
         params: [semester_id]
       )
@@ -59,9 +54,7 @@ module Queries
     def display_disciplines(disciplines)
       return puts 'В Семестре отсутствуют Дисциплины' if disciplines.ntuples.zero?
 
-      disciplines.each do |row|
-        puts "Дисциплина: #{row['name']}"
-      end
+      disciplines.each { |row| puts "Дисциплина: #{row['name']}." }
     end
   end
 end
