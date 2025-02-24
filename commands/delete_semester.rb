@@ -1,18 +1,12 @@
-require_relative '../database'
+require_relative '../databases/postgresql'
 require_relative '../queries/semester_query'
 
 module Commands
   class DeleteSemester
-    def initialize
-      @db = Database.new
-    end
-
     def call
       input_name
       delete_semester
       puts 'Семестр был успешно удален.' if @result.ntuples.positive?
-    ensure
-      @db.close
     end
 
     private
@@ -35,7 +29,7 @@ module Commands
     end
 
     def delete_semester
-      @result = @db.exec_params(
+      @result = Databases::Postgresql.perform_query(
         query: 'DELETE FROM semesters WHERE id = $1 RETURNING name',
         params: [@semester_id]
       )

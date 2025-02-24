@@ -1,20 +1,14 @@
 require_relative '../semester'
-require_relative '../database'
+require_relative '../databases/postgresql'
 require_relative '../queries/semester_query'
 require 'date'
 
 module Forms
   class SemesterForm
-    def initialize
-      @db = Database.new
-    end
-
     def call
       input_name
       input_date
       save_db
-    ensure
-      @db.close
     end
 
     private
@@ -64,7 +58,7 @@ module Forms
     end
 
     def save_db
-      @db.exec_params(
+      @db.Databases::Postgresql.perform_query(
         query: 'INSERT INTO semesters (name, start_date, end_date) VALUES ($1, $2, $3)',
         params: [@semester_name, @start_date, @end_date]
       )
