@@ -6,7 +6,7 @@ module Services
       input_lab_work_Date
     end
 
-  private
+    private
 
     def input_lab_work_date
       loop do

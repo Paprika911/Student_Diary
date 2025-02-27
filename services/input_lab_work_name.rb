@@ -4,7 +4,7 @@ module Services
       input_lab_work_name
     end
 
-  private
+    private
 
     def input_lab_work_name
       loop do
