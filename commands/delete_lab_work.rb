@@ -33,11 +33,7 @@ module Commands
     end
 
     def delete_lab_work
-      @result = Databases::Postgresql.perform_query(
-        query: 'DELETE FROM lab_works WHERE id = $1 AND discipline_id = $2 RETURNING name',
-        params: [@discipline_id, @semester_id]
-      )
-      puts 'Лабораторная Работа была успешно удалена.' if @result.ntuples.positive?
+      Commands::DeleteRecord.new(table: 'lab_works', id: @lab_work_id).call
     end
   end
 end
