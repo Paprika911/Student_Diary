@@ -6,7 +6,6 @@ module Commands
     def call
       input_name
       delete_semester
-      puts 'Семестр был успешно удален.' if @result.ntuples.positive?
     end
 
     private
@@ -22,17 +21,15 @@ module Commands
     def valid_name?
       return puts 'Название Семестра не может быть пустым' if @semester_name.nil? || @semester_name.strip.empty?
 
-      @semester_id = Queries::SemesterQuery.new.find_by_name(semester_name: @semester_name)
-      return puts "Семестр с именем #{@semester_name} не найден." if @semester_id.nil?
+      semester = Queries::SemesterQuery.new.find_by_name(semester_name: @semester_name)
+      return puts "Семестр с именем #{@semester_name} не найден." if semester.nil?
 
+      @semester_id = semester.id
       true
     end
 
     def delete_semester
-      @result = Databases::Postgresql.perform_query(
-        query: 'DELETE FROM semesters WHERE id = $1 RETURNING name',
-        params: [@semester_id]
-      )
+      Commands::DeleteRecord.new(table: 'semesters', id: @semester_id).call
     end
   end
 end
