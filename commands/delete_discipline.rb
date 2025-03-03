@@ -1,6 +1,7 @@
 require_relative '../databases/postgresql'
 require_relative '../queries/discipline_query'
 require_relative '../services/input_discipline_name'
+require_relative 'delete_obj'
 
 module Commands
   class DeleteDiscipline
@@ -33,11 +34,7 @@ module Commands
     end
 
     def delete_discipline
-      @result = Databases::Postgresql.perform_query(
-        query: 'DELETE FROM disciplines WHERE id = $1 AND semester_id = $2 RETURNING name',
-        params: [@discipline_id, @semester_id]
-      )
-      puts 'Дисциплина была успешно удалена.' if @result.ntuples.positive?
+      Commands::DeleteRecord.new(table: 'disciplines', id: @discipline_id).call
     end
   end
 end
