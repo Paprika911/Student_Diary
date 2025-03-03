@@ -1,7 +1,7 @@
 require_relative '../databases/postgresql'
 
 module Commands
-  class  DeleteRecord
+  class DeleteRecord
     def initialize(table:, id:)
       @table = table
       @id = id
@@ -15,10 +15,15 @@ module Commands
 
     def delete_record
       result = Databases::Postgresql.perform_query(
-        query: "DELETE FORM #{@table} WHERE id = $1 RETURNING id",
+        query: "DELETE FROM #{@table} WHERE id = $1 RETURNING id",
         params: [@id]
       )
-      puts "Запись успешно удалена." if result.ntuples.positive?
+
+      return puts 'Запись успешно удалена.' if result.ntuples.positive?
+
+      puts "Не найдена запись в #{@table} с id #{@id}."
+    rescue PG::UndefinedTable
+      puts "Ошибка: таблица #{@table} не найдена."
     end
   end
 end
