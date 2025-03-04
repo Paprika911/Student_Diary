@@ -13,6 +13,7 @@ module Databases
       ).exec_params(query, params)
     rescue PG::Error => e
       puts "Ошибка выполнения запроса: #{e.message}"
+      raise
     ensure
       PG.connect.close if PG.respond_to?(:close)
     end

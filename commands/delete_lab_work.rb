@@ -1,6 +1,7 @@
 require_relative '../databases/postgresql'
 require_relative '../queries/lab_work_query'
 require_relative '../services/input_lab_work_name'
+require_relative 'delete_obj'
 
 module Commands
   class DeleteLabWork
@@ -18,7 +19,7 @@ module Commands
     private
 
     def input_name
-      @lab_work_name = Services::InputLabWorkName.class_call
+      @lab_work_name = Services::InputLabWorkName.new.call
     end
 
     def lab_work_exist?

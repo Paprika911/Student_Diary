@@ -5,7 +5,7 @@ module Queries
   class LabWorkQuery
     def find_by_name(lab_work_name:, discipline_id:)
       result = Databases::Postgresql.perform_query(
-        query: 'SELECT id, name, discipline_id FROM lab_works WHERE name = $1 and discipline_id = $2',
+        query: 'SELECT id, name, discipline_id, deadline, status, grade FROM lab_works WHERE name = $1 and discipline_id = $2',
         params: [lab_work_name, discipline_id]
       )
       return nil if result.ntuples.zero?
@@ -14,7 +14,10 @@ module Queries
       LabWork.new(
         id: row['id'],
         lab_work_name: row['name'],
-        discipline_id: row['semester_id']
+        discipline_id: row['semester_id'],
+        deadline: row['deadline'],
+        status: row['status'],
+        grade: row['grade']
       )
     end
 

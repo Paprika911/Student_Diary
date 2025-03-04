@@ -24,37 +24,37 @@ module Forms
     private
 
     def input_name
-      @lab_work_name = Services::InputLabWorkName.call
+      @lab_work_name = Services::InputLabWorkName.new.call
     end
 
     def lab_work_already_exist?
-    result = Queries::LabWorkQuery.new.find_by_name(
-      lab_work_name: @lab_work_name,
-      discipline_id: @discipline_id
-    )
-    return puts 'Лабораторная Работа с таким названием уже существует.' unless result.nil?
+      result = Queries::LabWorkQuery.new.find_by_name(
+        lab_work_name: @lab_work_name,
+        discipline_id: @discipline_id
+      )
+      return puts 'Лабораторная Работа с таким названием уже существует.' unless result.nil?
 
-    true
+      true
     end
 
     def input_date
-      @deadline = Services::InputLabWorkDate.call  
-    end
-
-    def input_status
-      @grade = Services::InputLabWorkGrade.call
+      @deadline = Services::InputLabWorkDate.new.call
     end
 
     def input_grade
+      @grade = Services::InputLabWorkGrade.new.call
+    end
+
+    def input_status
       return @status = false if @grade.nil?
 
       @status = true
     end
 
     def save_db
-      @db.Databases::Postgresql.perform_query(
+      Databases::Postgresql.perform_query(
         query: 'INSERT INTO lab_works (name, deadline, status, grade, discipline_id) VALUES ($1, $2, $3, $4, $5)',
-        params: [@discipline_name, @deadline, @status, @grade, @discipline_id]
+        params: [@lab_work_name, @deadline, @status, @grade, @discipline_id]
       )
       puts 'Лабораторная работа успешно добавлена!'
     end
