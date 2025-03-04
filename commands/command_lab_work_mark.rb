@@ -2,7 +2,7 @@ require_relative '../databases/postgresql'
 require_relative '../services/input_lab_work_grade'
 
 module Commands
-  class AddDeleteLWMark
+  class CommandLabWorkMark
     def initialize(id:)
       @id = id
     end
