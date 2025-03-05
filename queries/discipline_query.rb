@@ -22,16 +22,25 @@ module Queries
       display_disciplines(fetch_disciplines)
     end
 
+    def all_marks
+      display_marks(fetch_disciplines)
+    end
+
     private
 
     def fetch_disciplines
-      @db.Databases::Postgresql.perform_query(query: 'SELECT * FROM disciplines')
+      disciplines = Databases::Postgresql.perform_query(query: 'SELECT * FROM disciplines')
+      return puts 'Дисциплины отсутствуют.' if disciplines.ntuples.zero?
+
+      disciplines
     end
 
     def display_disciplines(disciplines)
-      return puts 'Дисциплины отсутствуют.' if disciplines.ntuples.zero?
+      disciplines.each { |row| puts "Дисциплина: #{row['name']}." } if disciplines&.ntuples&.positive?
+    end
 
-      disciplines.each { |row| puts "Дисциплина: #{row['name']}." }
+    def display_marks(disciplines)
+      disciplines.each { |row| puts "Дисциплина: #{row['name']} Оценка: #{row['grade']}" } if disciplines&.ntuples&.positive?
     end
   end
 end
