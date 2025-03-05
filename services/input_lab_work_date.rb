@@ -3,7 +3,7 @@ require 'date'
 module Services
   class InputLabWorkDate
     def call
-      input_lab_work_Date
+      input_lab_work_date
     end
 
     private
@@ -12,7 +12,7 @@ module Services
       loop do
         puts 'Введите дату окончания выполнения Лабораторной Работы:'
         @lab_work_date = gets.chomp
-        return @lab_work if valid_date?
+        return @lab_work_date if valid_date?
       end
     end
 
