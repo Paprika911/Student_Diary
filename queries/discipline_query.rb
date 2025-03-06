@@ -30,9 +30,7 @@ module Queries
 
     def fetch_disciplines
       disciplines = Databases::Postgresql.perform_query(query: 'SELECT * FROM disciplines')
-      return puts 'Дисциплины отсутствуют.' if disciplines.ntuples.zero?
-
-      disciplines
+      disciplines.ntuples.zero? ? (puts 'Дисциплины отсутствуют.') : disciplines
     end
 
     def display_disciplines(disciplines)

@@ -38,9 +38,7 @@ module Queries
 
     def fetch_semesters
       semesters = Databases::Postgresql.perform_query(query: 'SELECT * FROM semesters')
-      return puts 'В таблице нет данных.' if semesters.ntuples.zero?
-
-      semesters
+      semesters.ntuples.zero? ? (puts 'Семестры отсутствуют.') : semesters
     end
 
     def fetch_disciplines(semester_id:)
