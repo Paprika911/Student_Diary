@@ -22,8 +22,8 @@ module Queries
       display_disciplines(fetch_disciplines)
     end
 
-    def all_marks
-      display_marks(fetch_disciplines)
+    def all_disciplines_marks
+      display_disciplines_marks(fetch_disciplines)
     end
 
     private
@@ -37,8 +37,10 @@ module Queries
       disciplines.each { |row| puts "Дисциплина: #{row['name']}." } if disciplines&.ntuples&.positive?
     end
 
-    def display_marks(disciplines)
-      disciplines.each { |row| puts "Дисциплина: #{row['name']} Оценка: #{row['grade']}" } if disciplines&.ntuples&.positive?
+    def display_disciplines_marks(disciplines)
+      return unless disciplines&.ntuples&.positive?
+
+      disciplines.each { |row| puts "Дисциплина: #{row['name']} Оценка: #{row['grade']}" }
     end
   end
 end

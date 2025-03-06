@@ -30,8 +30,8 @@ module Queries
       display_disciplines(fetch_disciplines(semester_id: semester.id))
     end
 
-    def all_marks
-      display_marks(fetch_semesters)
+    def all_semesters_marks
+      display_semesters_marks(fetch_semesters)
     end
 
     private
@@ -49,7 +49,9 @@ module Queries
     end
 
     def display_semesters(semesters)
-      semesters.each { |row| puts "Название: #{row['name']}, дата начала: #{row['start_date']}, дата окончания: #{row['end_date']}." } if semesters&.ntuples&.positive?
+      return unless semesters&.ntuples&.positive?
+
+      semesters.each { |row| puts "Название: #{row['name']}, дата начала: #{row['start_date']}, дата окончания: #{row['end_date']}." }
     end
 
     def display_disciplines(disciplines)
@@ -58,8 +60,10 @@ module Queries
       disciplines.each { |row| puts "Дисциплина: #{row['name']}." }
     end
 
-    def display_marks(semesters)
-      semesters.each { |row| puts "Дисциплина: #{row['name']} Оценка: #{row['grade']}" } if semesters&.ntuples&.positive?
+    def display_semesters_marks(semesters)
+      return unless semesters&.ntuples&.positive?
+
+      semesters.each { |row| puts "Семестр: #{row['name']} Оценка: #{row['grade']}" }
     end
   end
 end
