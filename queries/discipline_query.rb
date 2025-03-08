@@ -23,11 +23,24 @@ module Queries
     end
 
     def discipline_grade(discipline_id:)
-      avg_lab_works_grade(discipline_id: discipline_id)
+      avg_lw_grade(discipline_id: discipline_id)
     end
 
-    def avg_disciplines_grade
-      all_disciplines_grade
+    def all_discipline_grade
+      result = Databases::Postgresql.perform_query(
+        query:
+        'SELECT
+            AVG(lw.grade) AS overall_average
+        FROM
+            disciplines d
+        LEFT JOIN
+            lab_works lw ON lw.discipline_id = d.id'
+      )
+      return { status: :no_data } if result.ntuples.zero?
+
+      overall_average = result[0]['overall_average']&.to_f&.round(2)
+      status = overall_average.present? ? :calculated : :no_grades
+      { overal_average: overall_average, status: status }
     end
 
     private
@@ -41,48 +54,33 @@ module Queries
       disciplines.each { |row| puts "Дисциплина: #{row['name']}." } if disciplines&.ntuples&.positive?
     end
 
-    def avg_lab_works_grade(discipline_id:)
+    def avg_lw_grade(discipline_id:)
       result = Databases::Postgresql.perform_query(
-        query: '
-          SELECT 
-            d.id AS discipline_id,
-            d.name AS discipline_name,
-            AVG(lw.grade) AS average_grade
-          FROM disciplines d
-          LEFT JOIN lab_works lw ON lw.discipline_id = d.id
-          WHERE d.id = $1
-          GROUP BY d.id, d.name',
-        params:[discipline_id]
+        query:
+          'SELECT
+              d.id AS discipline_id,
+              d.name AS discipline_name,
+              AVG(lw.grade) AS average_grade
+          FROM
+              disciplines d
+          LEFT JOIN
+              lab_works lw ON lw.discipline_id = d.id
+          WHERE
+              d.id = $1
+          GROUP BY
+              d.id, d.name',
+        params: [discipline_id]
       )
-      return {
-        status: 'no data'
-      } if result.ntuples.zero?
+      return { status: :no_data } if result.ntuples.zero?
 
-      avg = result[0]['average_grade']&.to_f&.round(2)
+      discipline_name = result[0]['discipline_name']
+      average_grade = result[0]['average_grade']&.to_f&.round(2)
+      status = average_grade.present? ? :calculated : :no_grades
       {
-        discipline_id: discipline_id, 
-        discipline_name: result[0]['discipline_name'] , 
-        average_grade: avg, 
-        status: avg.nil? ? 'no grades' : 'calculated'
-      }
-    end
-
-    def all_disciplines_grade
-      result = Databases::Postgresql.perform_query(
-        query:'
-        SELECT AVG(lw.grade) AS overall_average
-        FROM disciplines d
-        LEFT JOIN lab_works lw ON lw.discipline_id = d.id'
-      )
-      return {
-        overall_average: nil,
-        status: 'no grades'
-      } if result.ntuples.zero? || result[0]['overall_average'].nil?
-
-      overall_average = result[0]['overall_average']&.to_f&.round(2)
-      {
-        overall_average: overall_average,
-        status: 'calculated'
+        discipline_id: discipline_id,
+        discipline_name: discipline_name,
+        average_grade: average_grade,
+        status: status
       }
     end
   end
