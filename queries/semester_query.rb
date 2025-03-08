@@ -47,7 +47,7 @@ module Queries
     def display_semesters(semesters)
       return unless semesters&.ntuples&.positive?
 
-      semesters.each { |row| puts "Название: #{row['name']}, дата начала: #{row['start_date']}, дата окончания: #{row['end_date']}." }
+      semesters.each { |row| puts "Название: #{row['name']}, Даты: #{row['start_date']} - #{row['end_date']}." }
     end
 
     def display_disciplines(disciplines)
