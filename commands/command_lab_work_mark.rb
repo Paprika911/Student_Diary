@@ -20,7 +20,7 @@ module Commands
 
     def save_db
       result = Databases::Postgresql.perform_query(
-        query: 'UPDATE lab_works SET grade = $2 WHERE id = $1',
+        query: 'UPDATE lab_works SET grade = $2 WHERE id = $1 RETURNING id',
         params: [@id, @grade]
       )
       return puts 'Оценка и статус Лабораторной Работы успешно обновлены' if result.ntuples.positive?

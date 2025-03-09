@@ -33,7 +33,8 @@ module Queries
     private
 
     def fetch_semesters
-      Databases::Postgresql.perform_query(query: 'SELECT * FROM semesters')
+      semesters = Databases::Postgresql.perform_query(query: 'SELECT * FROM semesters')
+      semesters.ntuples.zero? ? (puts 'Семестры отсутствуют.') : semesters
     end
 
     def fetch_disciplines(semester_id:)
@@ -44,11 +45,9 @@ module Queries
     end
 
     def display_semesters(semesters)
-      return puts 'В таблице нет данных.' if semesters.ntuples.zero?
+      return unless semesters&.ntuples&.positive?
 
-      semesters.each do |row|
-        puts "Название: #{row['name']}, дата начала: #{row['start_date']}, дата окончания: #{row['end_date']}."
-      end
+      semesters.each { |row| puts "Название: #{row['name']}, Даты: #{row['start_date']} - #{row['end_date']}." }
     end
 
     def display_disciplines(disciplines)
