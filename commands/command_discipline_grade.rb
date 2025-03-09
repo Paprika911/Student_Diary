@@ -2,8 +2,19 @@ require_relative '../queries/discipline_query'
 
 module Commands
   class DisciplineGradeCommand
-    def call_for_discipline(discipline_id:)
-      result = Queries::DisciplineQuery.new.discipline_grade(discipline_id: discipline_id)
+    def call(discipline_id: nil)
+      if discipline_id
+        result = Queries::DisciplineQuery.new.discipline_grade(discipline_id: discipline_id)
+        discipline_result(result)
+      else
+        result = Queries::DisciplineQuery.new.all_disciplines_grade
+        all_discipline_result(result)
+      end
+    end
+
+    private
+
+    def discipline_result(result)
       case result[:status]
       when :calculated
         puts "Дисциплина: #{result[:discipline_name]}, Средняя оценка: #{result[:average_grade]}"
@@ -14,8 +25,7 @@ module Commands
       end
     end
 
-    def call_for_all_discipline
-      result = Queries::DisciplineQuery.new.avg_disciplines_grade
+    def all_discipline_result(result)
       case result[:status]
       when :calculated
         puts "Средняя оценка за все Дисциплины: #{result[:overall_average]}"
