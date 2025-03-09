@@ -29,9 +29,9 @@ module Queries
     def all_disciplines_grade
       result = Databases::Postgresql.perform_query(
         query: <<-SQL
-        SELECT AVG(lw.grade) AS overall_average
-        FROM disciplines d
-        LEFT JOIN lab_works lw ON lw.discipline_id = d.id
+          SELECT AVG(lw.grade) AS overall_average
+          FROM disciplines d
+          LEFT JOIN lab_works lw ON lw.discipline_id = d.id
         SQL
       )
       return { status: :no_data } if result.ntuples.zero?
